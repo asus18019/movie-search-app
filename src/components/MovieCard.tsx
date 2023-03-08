@@ -1,6 +1,8 @@
 import { Button, Card, CardActions, CardContent, CardMedia, Stack, Typography } from '@mui/material';
 import CalendarMonthRoundedIcon from '@mui/icons-material/CalendarMonthRounded';
 import { FC } from 'react';
+import styles from '../styles/MovieCard.module.css'
+import Link from 'next/link'
 
 interface IMovieCardProps {
 	Poster: string,
@@ -29,7 +31,9 @@ const MovieCard: FC<IMovieCardProps> = ({ Title, Year, Poster, imdbID }) => {
 				</Typography>
 			</CardContent>
 			<CardActions>
-				<Button size="small">View</Button>
+				<Link href={ `/movie/${ imdbID }` } className={ styles.link }>
+					<Button size="small">View</Button>
+				</Link>
 				<Button size="small">Save</Button>
 			</CardActions>
 		</Card>
