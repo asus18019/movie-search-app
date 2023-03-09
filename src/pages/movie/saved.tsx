@@ -8,22 +8,40 @@ import { selectSavedMovies, setSavedMovies, setSearchValue } from '@/redux/saved
 import { useSelector } from 'react-redux';
 import Head from 'next/head';
 import debounce from 'lodash.debounce';
+import { useRouter } from 'next/router';
+import { GetServerSidePropsContext } from 'next';
+import { ParsedUrlQuery } from 'querystring';
 
 const PlainText = styled(Typography)({
 	fontFamily: 'Merriweather'
 });
 
-const Saved: FC = () => {
+export async function getServerSideProps(context: GetServerSidePropsContext) {
+	return {
+		props: {
+			query: context.query
+		}
+	};
+}
+
+interface ISavedProps {
+	query: ParsedUrlQuery;
+}
+
+const Saved: FC<ISavedProps> = ({ query }) => {
+	const router = useRouter();
 	const dispatch = useAppDispatch();
 	const { movies, searchValue } = useSelector(selectSavedMovies);
 	const savedMovies = movies;
 
 	useEffect(() => {
 		const savedMovies: IMovie[] = JSON.parse(localStorage.getItem('savedMovies') || '[]');
-		if(searchValue === '') {
+		const searchParam = query.search?.toString().toLowerCase();
+		if(!searchParam) {
 			dispatch(setSavedMovies(savedMovies));
 		} else {
-			dispatch(setSavedMovies(savedMovies.filter(movie => movie.Title.toLowerCase().includes(searchValue.toLowerCase()))));
+			dispatch(setSearchValue(searchParam));
+			dispatch(setSavedMovies(savedMovies.filter(movie => movie.Title.toLowerCase().includes(searchParam))));
 		}
 	}, []);
 
@@ -37,17 +55,22 @@ const Saved: FC = () => {
 			const savedMovies: IMovie[] = JSON.parse(localStorage.getItem('savedMovies') || '[]');
 			if(value === '') {
 				dispatch(setSavedMovies(savedMovies));
-				return;
+				router.query = {};
+			} else {
+				dispatch(setSavedMovies(savedMovies.filter(movie => movie.Title.toLowerCase().includes(value.toLowerCase()))));
+				router.query = { search: value };
 			}
-			dispatch(setSavedMovies(savedMovies.filter(movie => movie.Title.toLowerCase().includes(value.toLowerCase()))));
+			await router.push(router);
 		}, 500),
 		[]
 	);
 
-	const handleClearSearch = () => {
+	const handleClearSearch = async () => {
 		const savedMovies: IMovie[] = JSON.parse(localStorage.getItem('savedMovies') || '[]');
 		dispatch(setSavedMovies(savedMovies));
 		dispatch(setSearchValue(''));
+		router.query = {};
+		await router.push(router);
 	};
 
 	const renderMovies = (movies: IMovie[]) => {
@@ -93,6 +116,10 @@ const Saved: FC = () => {
 										{ renderMovies(savedMovies) }
 									</Grid>
 								</>
+							) : (!savedMovies.length && searchValue.length) ? (
+								<PlainText sx={ { fontSize: { xs: '16px', lg: '18px' }, mb: { xs: 3, lg: 5 } } }>
+									No movie was found by your request. Try to write another title
+								</PlainText>
 							) : (
 								<PlainText sx={ { fontSize: { xs: '16px', lg: '18px' }, mb: { xs: 3, lg: 5 } } }>
 									There are no saved movies. Try to save any...
