@@ -1,4 +1,5 @@
 import Head from 'next/head';
+import { useCallback } from 'react';
 import {
 	Box,
 	Container,
@@ -12,23 +13,11 @@ import {
 import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
 import ClearRoundedIcon from '@mui/icons-material/ClearRounded';
 import MovieCard from '@/components/MovieCard';
-import { useCallback, useState } from 'react';
 import debounce from 'lodash.debounce';
-
-interface IMovieFromSearch {
-	Poster: string,
-	Title: string,
-	Type: string,
-	Year: string,
-	imdbID: string
-}
-
-interface ISearchResponse {
-	Response: string,
-	Search?: IMovieFromSearch[],
-	totalResults?: string,
-	Error?: string,
-}
+import { useSelector } from 'react-redux';
+import { useAppDispatch } from '@/redux/store';
+import { clearSearch, fetchMovies, selectMovies, setSearchValue } from '@/redux/movie/slice';
+import { Status } from '@/redux/movie/types';
 
 const InputContainer = styled(Stack)({
 	border: '1px solid #e0e0e0',
@@ -42,43 +31,31 @@ const SearchInput = styled(InputBase)({
 	color: 'black'
 });
 
-const API_KEY = '8f36a973';
-
 const Home = () => {
-	const [searchValue, setSearchValue] = useState<string>('');
-	const [requestStatus, setRequestStatus] = useState<string>('none');
-	const [movies, setMovies] = useState<IMovieFromSearch[]>([]);
+	const dispatch = useAppDispatch();
+	const { movies, status, totalResults, error, searchValue } = useSelector(selectMovies);
 
 	const onChangeSearchValue = (value: string) => {
-		setSearchValue(value);
-		fetchMovies(value);
+		dispatch(setSearchValue(value));
+		handleFetchMovies(value);
 	};
 
-	const fetchMovies = useCallback(
+	const handleFetchMovies = useCallback(
 		debounce(async (value: string) => {
 			if(value === '') {
-				handleClearSearch();
+				dispatch(clearSearch());
 				return;
 			}
-			setRequestStatus('pending');
-			const res = await fetch(`https://www.omdbapi.com/?apikey=${ API_KEY }&s=${ value }&page=1`);
-			const data: ISearchResponse = await res.json();
-			if(data.Response === 'True' && data.Search?.length) {
-				setMovies(data.Search);
-				setRequestStatus('success');
-			} else if(data.Response === 'False' && data.Error) {
-				setRequestStatus(data.Error);
-				setMovies([]);
-			}
+			dispatch(fetchMovies(value));
 		}, 500),
 		[]
 	);
 
-	const handleClearSearch = () => {
-		setMovies([]);
-		setRequestStatus('none');
-		setSearchValue('');
-	}
+	const handleClearSearch = () => dispatch(clearSearch());
+
+	const isLoading = Status.LOADING === status;
+	const isSuccess = Status.SUCCESS === status;
+	const isError = Status.ERROR === status
 
 	return (
 		<>
@@ -123,10 +100,10 @@ const Home = () => {
 						</InputContainer>
 						<Divider sx={ { my: { xs: 3, lg: 5 } } }/>
 						{
-							requestStatus === 'success' && movies.length ? (
+							isSuccess ? (
 								<Grid container spacing={ { xs: 3, lg: 6 } }>
 									{
-										movies?.map(movie => {
+										movies.map(movie => {
 											return (
 												<Grid key={ movie.imdbID } item xs={ 12 } sm={ 6 } md={ 4 }>
 													<MovieCard imdbID={ movie.imdbID } Poster={ movie.Poster }
@@ -136,12 +113,12 @@ const Home = () => {
 										})
 									}
 								</Grid>
-							) : requestStatus === 'pending' ? (
-								<div>Loading</div>
-							) : requestStatus === 'none' ? (
-								<div>Start searching for a movie. Type the name in the field above...</div>
+							) : isLoading ? (
+								<div>Loading...</div>
+							) : isError ? (
+								<div>An error happened: { error }</div>
 							) : (
-								<div>An error happened: { requestStatus }</div>
+								<div>Start searching for a movie. Type the name in the field above...</div>
 							)
 						}
 					</Box>
