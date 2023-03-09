@@ -66,6 +66,24 @@ const Home = () => {
 	const isSuccess = Status.SUCCESS === status;
 	const isError = Status.ERROR === status;
 
+	const renderMovies = (movies: IMovie[]) => {
+		return movies.map(movie => {
+			return (
+				<Grid key={ movie.imdbID } item xs={ 12 } sm={ 6 } md={ 4 }>
+					<MovieCard
+						imdbID={ movie.imdbID }
+						Poster={ movie.Poster }
+						Title={ movie.Title }
+						Year={ movie.Year }
+						Type={ movie.Type }
+						savedIDs={ savedIDs }
+						setSavedIDs={ setSavedIDs }
+					/>
+				</Grid>
+			);
+		})
+	};
+
 	return (
 		<>
 			<Head>
@@ -93,23 +111,7 @@ const Home = () => {
 										Movies found: { totalResults }
 									</PlainText>
 									<Grid container spacing={ { xs: 3, lg: 6 } }>
-										{
-											movies.map(movie => {
-												return (
-													<Grid key={ movie.imdbID } item xs={ 12 } sm={ 6 } md={ 4 }>
-														<MovieCard
-															imdbID={ movie.imdbID }
-															Poster={ movie.Poster }
-															Title={ movie.Title }
-															Year={ movie.Year }
-															Type={ movie.Type }
-															savedIDs={ savedIDs }
-															setSavedIDs={ setSavedIDs }
-														/>
-													</Grid>
-												);
-											})
-										}
+										{ renderMovies(movies) }
 									</Grid>
 									<Box display='flex' justifyContent='center'>
 										<Pagination
