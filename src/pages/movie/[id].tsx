@@ -4,7 +4,7 @@ import { FC } from 'react';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { IMAGE_PLACEHOLDER_URL } from '@/constants';
-import { IMovieProps } from '@/pages/movie/types';
+import { IMovieProps } from '@/types/types';
 
 export const getServerSideProps = async (context: { params: { id: any; }; }) => {
 	const id = context.params.id;
@@ -153,7 +153,7 @@ const Movie: FC<IMovieProps> = ({ movie }) => {
 							mb: { xs: 3, lg: 5 }
 						} }
 					>
-						What is "{ movie.Title }" about?
+						What is &laquo;{ movie.Title }&raquo; about?
 					</Typography>
 					<MoviePropertyValueText>{ movie.Plot }</MoviePropertyValueText>
 					<Button startIcon={ <ArrowBackIcon/> } onClick={ () => router.back() } variant="contained" size="large" sx={ { mt: '25px' } }>
