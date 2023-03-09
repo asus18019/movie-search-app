@@ -8,7 +8,8 @@ import {
 	styled,
 	Stack,
 	Divider,
-	Grid
+	Grid,
+	CircularProgress
 } from '@mui/material';
 import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
 import ClearRoundedIcon from '@mui/icons-material/ClearRounded';
@@ -29,6 +30,10 @@ const SearchInput = styled(InputBase)({
 	width: '100%',
 	fontFamily: 'Merriweather',
 	color: 'black'
+});
+
+const PlainText = styled(Typography)({
+	fontFamily: 'Merriweather'
 });
 
 const Home = () => {
@@ -55,7 +60,7 @@ const Home = () => {
 
 	const isLoading = Status.LOADING === status;
 	const isSuccess = Status.SUCCESS === status;
-	const isError = Status.ERROR === status
+	const isError = Status.ERROR === status;
 
 	return (
 		<>
@@ -101,24 +106,34 @@ const Home = () => {
 						<Divider sx={ { my: { xs: 3, lg: 5 } } }/>
 						{
 							isSuccess ? (
-								<Grid container spacing={ { xs: 3, lg: 6 } }>
-									{
-										movies.map(movie => {
-											return (
-												<Grid key={ movie.imdbID } item xs={ 12 } sm={ 6 } md={ 4 }>
-													<MovieCard imdbID={ movie.imdbID } Poster={ movie.Poster }
-													           Title={ movie.Title } Year={ movie.Year }/>
-												</Grid>
-											);
-										})
-									}
-								</Grid>
+								<Box>
+									<PlainText sx={ { fontSize: { xs: '16px', lg: '18px' }, mb: { xs: 3, lg: 5 } } }>
+										Movies found: { totalResults }
+									</PlainText>
+									<Grid container spacing={ { xs: 3, lg: 6 } }>
+										{
+											movies.map(movie => {
+												return (
+													<Grid key={ movie.imdbID } item xs={ 12 } sm={ 6 } md={ 4 }>
+														<MovieCard imdbID={ movie.imdbID } Poster={ movie.Poster }
+														           Title={ movie.Title } Year={ movie.Year }/>
+													</Grid>
+												);
+											})
+										}
+									</Grid>
+								</Box>
 							) : isLoading ? (
-								<div>Loading...</div>
+								<CircularProgress size={ 60 } sx={ { mx: '50%' } }/>
 							) : isError ? (
-								<div>An error happened: { error }</div>
+								<PlainText sx={ { fontSize: { xs: '16px', lg: '18px' } } }>
+									Oops... An error happened: { error } <br/>
+									Try to write another title
+								</PlainText>
 							) : (
-								<div>Start searching for a movie. Type the name in the field above...</div>
+								<PlainText sx={ { fontSize: { xs: '16px', lg: '18px' } } }>
+									Start searching for movies. Write the title in the field above...
+								</PlainText>
 							)
 						}
 					</Box>
