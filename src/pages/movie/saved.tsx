@@ -50,9 +50,27 @@ const Saved: FC = () => {
 		dispatch(setSearchValue(''));
 	};
 
+	const renderMovies = (movies: IMovie[]) => {
+		return movies.map((movie: IMovie) => {
+			return (
+				<Grid key={ movie.imdbID } item xs={ 12 } sm={ 6 } md={ 4 }>
+					<MovieCard
+						imdbID={ movie.imdbID }
+						Poster={ movie.Poster }
+						Title={ movie.Title }
+						Year={ movie.Year }
+						Type={ movie.Type }
+						isShowDeleteBtn={ true }
+					/>
+				</Grid>
+			);
+		});
+	};
+
 	return (
 		<>
 			<Head>
+				<title>Saved movies</title>
 				<link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400&display=swap"
 				      rel="stylesheet"/>
 			</Head>
@@ -72,22 +90,7 @@ const Saved: FC = () => {
 										Movies found: { savedMovies.length }
 									</PlainText>
 									<Grid container spacing={ { xs: 3, lg: 6 } }>
-										{
-											savedMovies.map((movie: IMovie) => {
-												return (
-													<Grid key={ movie.imdbID } item xs={ 12 } sm={ 6 } md={ 4 }>
-														<MovieCard
-															imdbID={ movie.imdbID }
-															Poster={ movie.Poster }
-															Title={ movie.Title }
-															Year={ movie.Year }
-															Type={ movie.Type }
-															isShowDeleteBtn={ true }
-														/>
-													</Grid>
-												);
-											})
-										}
+										{ renderMovies(savedMovies) }
 									</Grid>
 								</>
 							) : (

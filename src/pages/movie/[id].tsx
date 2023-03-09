@@ -2,8 +2,7 @@ import { Box, Button, CardMedia, Container, Grid, Stack, styled, Typography } fr
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { FC } from 'react';
 import Head from 'next/head';
-import Link from 'next/link';
-import styles from '../../styles/MovieCard.module.css';
+import { useRouter } from 'next/router';
 import { IMAGE_PLACEHOLDER_URL } from '@/constants';
 import { IMovieProps } from '@/pages/movie/types';
 
@@ -45,6 +44,7 @@ const MoviePropertyValueText = styled(Typography)({
 });
 
 const Movie: FC<IMovieProps> = ({ movie }) => {
+	const router = useRouter();
 	return (
 		<>
 			<Head>
@@ -68,69 +68,74 @@ const Movie: FC<IMovieProps> = ({ movie }) => {
 					>
 						{ movie.Title }
 					</Typography>
-					<Stack direction={{ xs: 'column', sm: 'row' }}>
+					<Stack direction={ { xs: 'column', sm: 'row' } }>
 						<CardMedia
-							sx={ { width: { xs: '100%', sm: '500px' }, height: { xs: '500px', sm: '400px' }, borderRadius: 2, mr: { xs: 0, sm: '40px' } } }
+							sx={ {
+								width: { xs: '100%', sm: '500px' },
+								height: { xs: '500px', sm: '400px' },
+								borderRadius: 2,
+								mr: { xs: 0, sm: '40px' }
+							} }
 							image={ movie.Poster === 'N/A' ? IMAGE_PLACEHOLDER_URL : movie.Poster }
 							title={ movie.Title }
 						/>
-						<Box mt="10px" width='100%'>
+						<Box mt="10px" width="100%">
 							<Grid container>
-								<Grid item xs={ 4 } height='fit-content'>
+								<Grid item xs={ 4 } height="fit-content">
 									<MoviePropertyText>Rating:</MoviePropertyText>
 								</Grid>
 								<Grid item xs={ 8 }>
 									<MoviePropertyValueText>{ movie.imdbRating } / 10</MoviePropertyValueText>
 								</Grid>
-								<Grid item xs={ 4 } height='fit-content'>
+								<Grid item xs={ 4 } height="fit-content">
 									<MoviePropertyText>Release date:</MoviePropertyText>
 								</Grid>
 								<Grid item xs={ 8 }>
 									<MoviePropertyValueText>{ movie.Released }</MoviePropertyValueText>
 								</Grid>
-								<Grid item xs={ 4 } height='fit-content'>
+								<Grid item xs={ 4 } height="fit-content">
 									<MoviePropertyText>Genre:</MoviePropertyText>
 								</Grid>
 								<Grid item xs={ 8 }>
 									<MoviePropertyValueText>{ movie.Genre }</MoviePropertyValueText>
 								</Grid>
-								<Grid item xs={ 4 } height='fit-content'>
+								<Grid item xs={ 4 } height="fit-content">
 									<MoviePropertyText>Director:</MoviePropertyText>
 								</Grid>
 								<Grid item xs={ 8 }>
 									<MoviePropertyValueText>{ movie.Director }</MoviePropertyValueText>
 								</Grid>
-								<Grid item xs={ 4 } height='fit-content'>
+								<Grid item xs={ 4 } height="fit-content">
 									<MoviePropertyText>Language:</MoviePropertyText>
 								</Grid>
 								<Grid item xs={ 8 }>
 									<MoviePropertyValueText>{ movie.Language }</MoviePropertyValueText>
 								</Grid>
-								<Grid item xs={ 4 } height='fit-content'>
+								<Grid item xs={ 4 } height="fit-content">
 									<MoviePropertyText>Country:</MoviePropertyText>
 								</Grid>
 								<Grid item xs={ 8 }>
 									<MoviePropertyValueText>{ movie.Country }</MoviePropertyValueText>
 								</Grid>
-								<Grid item xs={ 4 } height='fit-content'>
+								<Grid item xs={ 4 } height="fit-content">
 									<MoviePropertyText>Runtime:</MoviePropertyText>
 								</Grid>
 								<Grid item xs={ 8 }>
 									<MoviePropertyValueText>{ movie.Runtime }</MoviePropertyValueText>
 								</Grid>
-								<Grid item xs={ 4 } height='fit-content'>
+								<Grid item xs={ 4 } height="fit-content">
 									<MoviePropertyText>Writer:</MoviePropertyText>
 								</Grid>
 								<Grid item xs={ 8 }>
 									<MoviePropertyValueText>{ movie.Writer }</MoviePropertyValueText>
 								</Grid>
-								<Grid item xs={ 4 } height='fit-content'>
+								<Grid item xs={ 4 } height="fit-content">
 									<MoviePropertyText>Awards:</MoviePropertyText>
 								</Grid>
 								<Grid item xs={ 8 }>
 									<MoviePropertyValueText>{ movie.Awards }</MoviePropertyValueText>
 								</Grid>
-								<Grid item xs={ 4 } height='fit-content'>
+								<Grid item xs={ 4 } height="fit-content">
 									<MoviePropertyText>Actors:</MoviePropertyText>
 								</Grid>
 								<Grid item xs={ 8 }>
@@ -151,11 +156,9 @@ const Movie: FC<IMovieProps> = ({ movie }) => {
 						What is "{ movie.Title }" about?
 					</Typography>
 					<MoviePropertyValueText>{ movie.Plot }</MoviePropertyValueText>
-					<Link href="/" className={ styles.link }>
-						<Button startIcon={ <ArrowBackIcon/> } variant="contained" size="large" sx={ { mt: '25px' } }>
-							BACK
-						</Button>
-					</Link>
+					<Button startIcon={ <ArrowBackIcon/> } onClick={ () => router.back() } variant="contained" size="large" sx={ { mt: '25px' } }>
+						BACK
+					</Button>
 				</Box>
 			</Container>
 		</>

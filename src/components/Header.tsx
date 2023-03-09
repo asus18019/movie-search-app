@@ -1,16 +1,14 @@
-import { Button, Divider, InputBase, Stack, styled, Typography } from '@mui/material';
+import { Divider, InputBase, Stack, styled, Typography } from '@mui/material';
 import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
 import ClearRoundedIcon from '@mui/icons-material/ClearRounded';
 import { FC } from 'react';
 import { useRouter } from 'next/router';
-import Link from 'next/link';
-import styles from '@/styles/MovieCard.module.css';
+import NavButton from '@/components/NavButton';
 
 const InputContainer = styled(Stack)({
 	border: '1px solid #e0e0e0',
 	padding: '6px 12px',
-	width: '100%',
-	marginRight: '30px'
+	width: '100%'
 });
 
 const SearchInput = styled(InputBase)({
@@ -43,7 +41,7 @@ const Header: FC<IHeaderProps> = ({ searchValue, onChangeSearchValue, handleClea
 				{ headerTitle }
 			</Typography>
 			<Stack direction="row">
-				<InputContainer direction="row">
+				<InputContainer direction="row" sx={ { mr: { xs: '10px', sm: '30px' } } }>
 					<SearchRoundedIcon sx={ { alignSelf: 'center' } }/>
 					<SearchInput
 						placeholder="Search..."
@@ -62,24 +60,12 @@ const Header: FC<IHeaderProps> = ({ searchValue, onChangeSearchValue, handleClea
 				</InputContainer>
 				{
 					router.pathname === '/' && (
-						<Link href={ `/movie/saved` } className={ styles.link }>
-							<Button color='warning' variant="outlined" sx={ { alignSelf: 'center', height: '100%', px: '20px' } }>
-								<Typography fontWeight={ 600 }>
-									Saved
-								</Typography>
-							</Button>
-						</Link>
+						<NavButton to="/movie/saved" title='Saved'/>
 					)
 				}
 				{
 					router.pathname === '/movie/saved' && (
-						<Link href={ `/` } className={ styles.link }>
-							<Button color='warning' variant="outlined" sx={ { alignSelf: 'center', height: '100%', px: '20px' } }>
-								<Typography fontWeight={ 600 }>
-									Homepage
-								</Typography>
-							</Button>
-						</Link>
+						<NavButton to="/" title='Homepage'/>
 					)
 				}
 			</Stack>
