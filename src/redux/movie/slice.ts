@@ -10,12 +10,17 @@ const initialState: initialStateType = {
 	searchValue: ''
 }
 
+interface IFetchMoviesThunkProps {
+	searchValue: string,
+	page: number
+}
+
 const API_KEY = '8f36a973';
 
-export const fetchMovies = createAsyncThunk<ISearchResponse, string>(
+export const fetchMovies = createAsyncThunk<ISearchResponse, IFetchMoviesThunkProps>(
 	'movies/fetchMovies',
-	async (value: string) => {
-		const response = await fetch(`https://www.omdbapi.com/?apikey=${ API_KEY }&s=${ value }&page=1`);
+	async ({ searchValue, page }) => {
+		const response = await fetch(`https://www.omdbapi.com/?apikey=${ API_KEY }&s=${ searchValue }&page=${ page }`);
 		return await response.json();
 	}
 );

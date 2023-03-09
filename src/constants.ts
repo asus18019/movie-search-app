@@ -1,0 +1,1 @@
+export const IMAGE_PLACEHOLDER_URL = 'https://joadre.com/wp-content/uploads/2019/02/no-image.jpg'

@@ -4,6 +4,8 @@ import { FC } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
 import styles from '../../styles/MovieCard.module.css';
+import { IMAGE_PLACEHOLDER_URL } from '@/constants';
+import { IMovieProps } from '@/pages/movie/types';
 
 export const getServerSideProps = async (context: { params: { id: any; }; }) => {
 	const id = context.params.id;
@@ -25,45 +27,6 @@ export const getServerSideProps = async (context: { params: { id: any; }; }) => 
 		}
 	};
 };
-
-type IRate = {
-	Source: string,
-	Value: string
-}
-
-type IMovie = {
-	Actors: string,
-	Awards: string,
-	BoxOffice: string,
-	Country: string,
-	DVD: string,
-	Director: string,
-	Genre: string,
-	Language: string,
-	Metascore: string,
-	Plot: string,
-	Poster: string,
-	Production: string,
-	Rated: string,
-	Ratings: IRate[]
-	Released: string,
-	Response: string,
-	Runtime: string,
-	Title: string,
-	Type: string,
-	Website: string,
-	Writer: string,
-	Year: string,
-	imdbID: string,
-	imdbRating: string,
-	imdbVotes: string,
-}
-
-interface IMovieProps {
-	movie: IMovie,
-	Response?: string,
-	Error?: string
-}
 
 const API_KEY = '8f36a973';
 
@@ -108,7 +71,7 @@ const Movie: FC<IMovieProps> = ({ movie }) => {
 					<Stack direction={{ xs: 'column', sm: 'row' }}>
 						<CardMedia
 							sx={ { width: { xs: '100%', sm: '500px' }, height: { xs: '500px', sm: '400px' }, borderRadius: 2, mr: { xs: 0, sm: '40px' } } }
-							image={ movie.Poster }
+							image={ movie.Poster === 'N/A' ? IMAGE_PLACEHOLDER_URL : movie.Poster }
 							title={ movie.Title }
 						/>
 						<Box mt="10px" width='100%'>

@@ -1,5 +1,5 @@
 import Head from 'next/head';
-import { useCallback } from 'react';
+import { ChangeEvent, useCallback } from 'react';
 import {
 	Box,
 	Container,
@@ -9,7 +9,8 @@ import {
 	Stack,
 	Divider,
 	Grid,
-	CircularProgress
+	CircularProgress,
+	Pagination
 } from '@mui/material';
 import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
 import ClearRoundedIcon from '@mui/icons-material/ClearRounded';
@@ -19,6 +20,7 @@ import { useSelector } from 'react-redux';
 import { useAppDispatch } from '@/redux/store';
 import { clearSearch, fetchMovies, selectMovies, setSearchValue } from '@/redux/movie/slice';
 import { Status } from '@/redux/movie/types';
+import { selectCurrentPage, setCurrentPage } from '@/redux/page/slice';
 
 const InputContainer = styled(Stack)({
 	border: '1px solid #e0e0e0',
@@ -39,6 +41,7 @@ const PlainText = styled(Typography)({
 const Home = () => {
 	const dispatch = useAppDispatch();
 	const { movies, status, totalResults, error, searchValue } = useSelector(selectMovies);
+	const currentPage = useSelector(selectCurrentPage);
 
 	const onChangeSearchValue = (value: string) => {
 		dispatch(setSearchValue(value));
@@ -48,15 +51,24 @@ const Home = () => {
 	const handleFetchMovies = useCallback(
 		debounce(async (value: string) => {
 			if(value === '') {
-				dispatch(clearSearch());
+				handleClearSearch();
 				return;
 			}
-			dispatch(fetchMovies(value));
+			dispatch(setCurrentPage(1));
+			dispatch(fetchMovies({ searchValue: value, page: currentPage }));
 		}, 500),
 		[]
 	);
 
-	const handleClearSearch = () => dispatch(clearSearch());
+	const handleClearSearch = () => {
+		dispatch(clearSearch());
+		dispatch(setCurrentPage(1));
+	}
+
+	const handleChangePage = (event: ChangeEvent<unknown>, page: number) => {
+		dispatch(fetchMovies({ searchValue, page }));
+		dispatch(setCurrentPage(page));
+	};
 
 	const isLoading = Status.LOADING === status;
 	const isSuccess = Status.SUCCESS === status;
@@ -122,6 +134,20 @@ const Home = () => {
 											})
 										}
 									</Grid>
+									<Box display='flex' justifyContent='center'>
+										<Pagination
+											count={ Math.ceil(totalResults / 10) }
+											showFirstButton
+											showLastButton
+											size="large"
+											shape="rounded"
+											variant="outlined"
+											defaultPage={ 1 }
+											page={ currentPage }
+											onChange={ (event, page) => handleChangePage(event, page) }
+											sx={ { my: { xs: 4, lg: 6 } } }
+										/>
+									</Box>
 								</Box>
 							) : isLoading ? (
 								<CircularProgress size={ 60 } sx={ { mx: '50%' } }/>

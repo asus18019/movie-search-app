@@ -1,10 +1,12 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { useDispatch } from 'react-redux';
 import movieSlice from './movie/slice';
+import pageSlice from './page/slice';
 
 export const store = configureStore({
 	reducer: {
-		movieSlice
+		movieSlice,
+		pageSlice
 	}
 });
 

@@ -3,6 +3,7 @@ import CalendarMonthRoundedIcon from '@mui/icons-material/CalendarMonthRounded';
 import { FC } from 'react';
 import styles from '../styles/MovieCard.module.css'
 import Link from 'next/link'
+import { IMAGE_PLACEHOLDER_URL } from '@/constants';
 
 interface IMovieCardProps {
 	Poster: string,
@@ -16,8 +17,8 @@ const MovieCard: FC<IMovieCardProps> = ({ Title, Year, Poster, imdbID }) => {
 		<Card variant="outlined" sx={ { boxShadow: '0px 8px 24px rgba(0, 0, 0, 0.05)' } }>
 			<CardMedia
 				sx={ { height: 200 } }
-				image={ Poster }
-				title="green iguana"
+				image={ Poster === 'N/A' ? IMAGE_PLACEHOLDER_URL : Poster }
+				title={ Title }
 			/>
 			<CardContent>
 				<Stack sx={ { display: 'flex', flexDirection: 'row', my: '5px', alignItems: 'center' } }>
