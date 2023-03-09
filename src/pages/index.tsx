@@ -17,6 +17,7 @@ import { clearSearch, fetchMovies, selectMovies, setSearchValue } from '@/redux/
 import { IMovie, Status } from '@/redux/movie/types';
 import { selectCurrentPage, setCurrentPage } from '@/redux/page/slice';
 import Header from '@/components/Header';
+import { getSavedMovieIDs } from '@/utils/getSavedMovieIDs';
 
 const PlainText = styled(Typography)({
 	fontFamily: 'Merriweather'
@@ -28,12 +29,9 @@ const Home = () => {
 	const currentPage = useSelector(selectCurrentPage);
 	const [savedIDs, setSavedIDs] = useState<string[]>([]);
 
-	// Get ID's of the saved movies
 	useEffect(() => {
-		const savedMovies: IMovie[] = JSON.parse(localStorage.getItem('savedMovies') || '[]');
-		setSavedIDs(savedMovies.map(elem => elem.imdbID));
-		console.log((savedMovies.map(elem => elem.imdbID)));
-	}, [])
+		setSavedIDs(getSavedMovieIDs());
+	}, []);
 
 	const onChangeSearchValue = (value: string) => {
 		dispatch(setSearchValue(value));
@@ -55,7 +53,7 @@ const Home = () => {
 	const handleClearSearch = () => {
 		dispatch(clearSearch());
 		dispatch(setCurrentPage(1));
-	}
+	};
 
 	const handleChangePage = (event: ChangeEvent<unknown>, page: number) => {
 		dispatch(fetchMovies({ searchValue, page }));
@@ -81,7 +79,7 @@ const Home = () => {
 					/>
 				</Grid>
 			);
-		})
+		});
 	};
 
 	return (
@@ -113,7 +111,7 @@ const Home = () => {
 									<Grid container spacing={ { xs: 3, lg: 6 } }>
 										{ renderMovies(movies) }
 									</Grid>
-									<Box display='flex' justifyContent='center'>
+									<Box display="flex" justifyContent="center">
 										<Pagination
 											count={ Math.ceil(totalResults / 10) }
 											showFirstButton
@@ -129,7 +127,9 @@ const Home = () => {
 									</Box>
 								</Box>
 							) : isLoading ? (
-								<CircularProgress size={ 60 } sx={ { mx: '50%' } }/>
+								<Box display="flex" justifyContent="center">
+									<CircularProgress size={ 60 }/>
+								</Box>
 							) : isError ? (
 								<PlainText sx={ { fontSize: { xs: '16px', lg: '18px' } } }>
 									Oops... An error happened: { error } <br/>

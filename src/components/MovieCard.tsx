@@ -9,6 +9,7 @@ import { useAppDispatch } from '@/redux/store';
 import { setSavedMovies } from '@/redux/savedMovies/slice';
 import { useSelector } from 'react-redux';
 import { selectSavedMovies } from '@/redux/savedMovies/slice';
+import { saveMovie } from '@/utils/saveMovie';
 
 interface IMovieCardProps {
 	Poster: string,
@@ -26,17 +27,8 @@ const MovieCard: FC<IMovieCardProps> = ({ Title, Year, Poster, imdbID, Type, sav
 	const { searchValue } = useSelector(selectSavedMovies);
 
 	const handleSaveMovie = () => {
-		let savedMovies: IMovie[] = JSON.parse(localStorage.getItem('savedMovies') || '[]');
-		savedMovies.push({
-			imdbID,
-			Title,
-			Year,
-			Poster,
-			Type
-		})
-		const updatedSavedMovies = JSON.stringify(savedMovies)
-		localStorage.setItem('savedMovies', updatedSavedMovies);
-		setSavedIDs([...savedIDs, imdbID]);
+		const ids = saveMovie(imdbID, Title, Year, Poster, Type);
+		setSavedIDs(ids);
 	};
 
 	const handleDeleteMovie = () => {

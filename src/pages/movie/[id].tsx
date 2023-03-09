@@ -1,10 +1,13 @@
 import { Box, Button, CardMedia, Container, Grid, Stack, styled, Typography } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import { FC } from 'react';
+import AddIcon from '@mui/icons-material/Add';
+import { FC, useEffect, useState } from 'react';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { IMAGE_PLACEHOLDER_URL } from '@/constants';
 import { IMovieProps } from '@/types/types';
+import { saveMovie } from '@/utils/saveMovie';
+import { getSavedMovieIDs } from '@/utils/getSavedMovieIDs';
 
 export const getServerSideProps = async (context: { params: { id: any; }; }) => {
 	const id = context.params.id;
@@ -45,6 +48,18 @@ const MoviePropertyValueText = styled(Typography)({
 
 const Movie: FC<IMovieProps> = ({ movie }) => {
 	const router = useRouter();
+
+	const [savedIDs, setSavedIDs] = useState<string[]>([]);
+
+	useEffect(() => {
+		setSavedIDs(getSavedMovieIDs());
+	}, []);
+
+	const handleSaveMovie = () => {
+		const ids = saveMovie(movie.imdbID, movie.Title, movie.Year, movie.Poster, movie.Type);
+		setSavedIDs(ids);
+	};
+
 	return (
 		<>
 			<Head>
@@ -140,6 +155,19 @@ const Movie: FC<IMovieProps> = ({ movie }) => {
 								</Grid>
 								<Grid item xs={ 8 }>
 									<MoviePropertyValueText>{ movie.Actors }</MoviePropertyValueText>
+								</Grid>
+								<Grid item xs={ 4 } height="fit-content">
+									{
+										savedIDs.includes(movie.imdbID) ? (
+											<Button variant="contained" disabled size="large" sx={ { mt: '25px' } }>
+												Saved
+											</Button>
+										) : (
+											<Button startIcon={ <AddIcon/> } onClick={ handleSaveMovie } variant="outlined" color='success' size="large" sx={ { mt: '25px' } }>
+												Save
+											</Button>
+										)
+									}
 								</Grid>
 							</Grid>
 						</Box>
