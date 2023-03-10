@@ -74,17 +74,17 @@ const Home: FC<IHomeProps> = ({ query }) => {
 
 	const handleFetchMovies = useCallback(
 		debounce(async (value: string) => {
-			if(value === '') {
+			if(value.trimEnd() === '') {
 				await handleClearSearch();
 				return;
 			}
 
 			dispatch(setCurrentPage(1));
-			dispatch(fetchMovies({ searchValue: value, page: currentPage }));
+			dispatch(fetchMovies({ searchValue: value.trimEnd(), page: currentPage }));
 
 			router.query = {
 				...router.query,
-				search: value
+				search: value.trimEnd()
 			};
 			await router.push(router);
 		}, 500),
