@@ -1,5 +1,5 @@
 import Head from 'next/head';
-import { ChangeEvent, useCallback, useEffect, useState } from 'react';
+import { ChangeEvent, FC, useCallback, useEffect, useState } from 'react';
 import {
 	Box,
 	Container,
@@ -11,6 +11,7 @@ import {
 } from '@mui/material';
 import MovieCard from '@/components/MovieCard';
 import debounce from 'lodash.debounce';
+import { useRouter } from 'next/router';
 import { useSelector } from 'react-redux';
 import { useAppDispatch } from '@/redux/store';
 import { clearSearch, fetchMovies, selectMovies, setSearchValue } from '@/redux/movie/slice';
@@ -18,19 +19,52 @@ import { IMovie, Status } from '@/redux/movie/types';
 import { selectCurrentPage, setCurrentPage } from '@/redux/page/slice';
 import Header from '@/components/Header';
 import { getSavedMovieIDs } from '@/utils/getSavedMovieIDs';
+import { GetServerSidePropsContext } from 'next';
+import { ParsedUrlQuery } from 'querystring';
 
 const PlainText = styled(Typography)({
 	fontFamily: 'Merriweather'
 });
 
-const Home = () => {
+export async function getServerSideProps(context: GetServerSidePropsContext) {
+	return {
+		props: {
+			query: context.query
+		}
+	};
+}
+
+interface IHomeProps {
+	query: ParsedUrlQuery;
+}
+
+const Home: FC<IHomeProps> = ({ query }) => {
 	const dispatch = useAppDispatch();
+	const router = useRouter();
 	const { movies, status, totalResults, error, searchValue } = useSelector(selectMovies);
 	const currentPage = useSelector(selectCurrentPage);
 	const [savedIDs, setSavedIDs] = useState<string[]>([]);
 
 	useEffect(() => {
 		setSavedIDs(getSavedMovieIDs());
+		const searchParam = query?.search?.toString().toLowerCase();
+		const pageParam = query?.page?.toString().toLowerCase();
+
+		if(searchParam && !pageParam) {
+			dispatch(setSearchValue(searchParam));
+			dispatch(fetchMovies({
+				searchValue: searchParam,
+				page: currentPage
+			}));
+		} else
+			if(pageParam) {
+			dispatch(setSearchValue(searchParam ? searchParam : searchValue));
+			dispatch(fetchMovies({
+				searchValue: searchParam ? searchParam : searchValue,
+				page: pageParam ? Number(pageParam) : currentPage
+			}));
+			dispatch(setCurrentPage(Number(pageParam)));
+		}
 	}, []);
 
 	const onChangeSearchValue = (value: string) => {
@@ -41,23 +75,41 @@ const Home = () => {
 	const handleFetchMovies = useCallback(
 		debounce(async (value: string) => {
 			if(value === '') {
-				handleClearSearch();
+				await handleClearSearch();
 				return;
 			}
+
 			dispatch(setCurrentPage(1));
 			dispatch(fetchMovies({ searchValue: value, page: currentPage }));
+
+			router.query = {
+				...router.query,
+				search: value
+			};
+			await router.push(router);
 		}, 500),
 		[]
 	);
 
-	const handleClearSearch = () => {
+	const handleClearSearch = async () => {
 		dispatch(clearSearch());
 		dispatch(setCurrentPage(1));
+		router.query = {  };
+		await router.push(router);
 	};
 
-	const handleChangePage = (event: ChangeEvent<unknown>, page: number) => {
+	const handleChangePage = async (event: ChangeEvent<unknown>, page: number) => {
 		dispatch(fetchMovies({ searchValue, page }));
 		dispatch(setCurrentPage(page));
+		if(page === 1) {
+			delete router.query.page
+		} else {
+			router.query = {
+				...router.query,
+				page: page.toString()
+			};
+		}
+		await router.push(router);
 	};
 
 	const isLoading = Status.LOADING === status;

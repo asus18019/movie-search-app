@@ -4,6 +4,10 @@ import ClearRoundedIcon from '@mui/icons-material/ClearRounded';
 import { FC } from 'react';
 import { useRouter } from 'next/router';
 import NavButton from '@/components/NavButton';
+import { useSelector } from 'react-redux';
+import { selectSavedMovies } from '@/redux/savedMovies/slice';
+import { selectMovies } from '@/redux/movie/slice';
+import { selectCurrentPage } from '@/redux/page/slice';
 
 const InputContainer = styled(Stack)({
 	border: '1px solid #e0e0e0',
@@ -27,6 +31,9 @@ interface IHeaderProps {
 
 const Header: FC<IHeaderProps> = ({ searchValue, onChangeSearchValue, handleClearSearch, headerTitle }) => {
 	const router = useRouter();
+	const { searchValue: savedSearchValue } = useSelector(selectSavedMovies);
+	const { searchValue: homepageSearchValue } = useSelector(selectMovies);
+	const page = useSelector(selectCurrentPage);
 
 	return (
 		<>
@@ -60,12 +67,16 @@ const Header: FC<IHeaderProps> = ({ searchValue, onChangeSearchValue, handleClea
 				</InputContainer>
 				{
 					router.pathname === '/' && (
-						<NavButton to="/movie/saved" title='Saved'/>
+						<NavButton to={ `/movie/saved${ savedSearchValue && `?search=${ savedSearchValue }` }` } title='Saved'/>
 					)
 				}
 				{
 					router.pathname === '/movie/saved' && (
-						<NavButton to="/" title='Homepage'/>
+						<NavButton to={ `/${
+							homepageSearchValue && page > 1 ? `?search=${ homepageSearchValue }&page=${ page }` :
+								homepageSearchValue ? `?search=${ homepageSearchValue }` :
+									page > 1 ? `?page=${ page }` : ''
+						}` } title='Homepage'/>
 					)
 				}
 			</Stack>
