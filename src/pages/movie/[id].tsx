@@ -11,7 +11,7 @@ import { getSavedMovieIDs } from '@/utils/getSavedMovieIDs';
 
 export const getServerSideProps = async (context: { params: { id: any; }; }) => {
 	const id = context.params.id;
-	const res = await fetch(`https://www.omdbapi.com/?apikey=${ API_KEY }&i=${ id }&plot=full`);
+	const res = await fetch(`${ process.env.NEXT_PUBLIC_BASE_URL }/?apikey=${ process.env.NEXT_PUBLIC_API_KEY }&i=${ id }&plot=full`);
 	const data: IMovieProps = await res.json();
 
 	if(data.Error) {
@@ -29,8 +29,6 @@ export const getServerSideProps = async (context: { params: { id: any; }; }) => 
 		}
 	};
 };
-
-const API_KEY = '8f36a973';
 
 const MoviePropertyText = styled(Typography)({
 	fontFamily: 'Merriweather',

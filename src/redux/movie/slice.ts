@@ -15,12 +15,11 @@ interface IFetchMoviesThunkProps {
 	page: number
 }
 
-const API_KEY = '8f36a973';
-
 export const fetchMovies = createAsyncThunk<ISearchResponse, IFetchMoviesThunkProps>(
 	'movies/fetchMovies',
 	async ({ searchValue, page }) => {
-		const response = await fetch(`https://www.omdbapi.com/?apikey=${ API_KEY }&s=${ searchValue }&page=${ page }`);
+		const API_KEY = process.env.NEXT_PUBLIC_API_KEY;
+		const response = await fetch(`${ process.env.NEXT_PUBLIC_BASE_URL }/?apikey=${ API_KEY }&s=${ searchValue }&page=${ page }`);
 		return await response.json();
 	}
 );
