@@ -1,4 +1,4 @@
-import { Button, Card, CardActions, CardContent, CardMedia, Stack, Typography } from '@mui/material';
+import { Button, Card, CardActions, CardContent, CardMedia, Stack, styled, Typography } from '@mui/material';
 import CalendarMonthRoundedIcon from '@mui/icons-material/CalendarMonthRounded';
 import { FC } from 'react';
 import styles from '../styles/MovieCard.module.css'
@@ -21,6 +21,12 @@ interface IMovieCardProps {
 	setSavedIDs?: any,
 	isShowDeleteBtn?: boolean
 }
+
+const CustomButton = styled(Button)({
+	fontWeight: 700,
+	fontSize: 14,
+	size: 'medium'
+});
 
 const MovieCard: FC<IMovieCardProps> = ({ Title, Year, Poster, imdbID, Type, savedIDs = [], setSavedIDs, isShowDeleteBtn = false }) => {
 	const dispatch = useAppDispatch();
@@ -63,16 +69,16 @@ const MovieCard: FC<IMovieCardProps> = ({ Title, Year, Poster, imdbID, Type, sav
 				</Typography>
 			</CardContent>
 			<CardActions>
-				<Link href={ `/movie/${ imdbID }` } className={ styles.link }>
-					<Button size="small">View</Button>
+				<Link prefetch={ true } href={ `/movie/${ imdbID }` } className={ styles.link }>
+					<CustomButton>View</CustomButton>
 				</Link>
 				{
 					savedIDs?.includes(imdbID) ? (
-						<Button size="medium" disabled>Saved</Button>
+						<CustomButton disabled>Saved</CustomButton>
 					) : isShowDeleteBtn ? (
-						<Button size="medium" color='error' onClick={ handleDeleteMovie }>Delete</Button>
+						<CustomButton color='error' onClick={ handleDeleteMovie }>Delete</CustomButton>
 					) : (
-						<Button size="medium" onClick={ handleSaveMovie }>Save</Button>
+						<CustomButton onClick={ handleSaveMovie }>Save</CustomButton>
 					)
 				}
 			</CardActions>

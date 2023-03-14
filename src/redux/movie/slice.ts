@@ -12,12 +12,12 @@ const initialState: initialStateType = {
 
 interface IFetchMoviesThunkProps {
 	searchValue: string,
-	page: number
+	page?: number
 }
 
 export const fetchMovies = createAsyncThunk<ISearchResponse, IFetchMoviesThunkProps>(
 	'movies/fetchMovies',
-	async ({ searchValue, page }) => {
+	async ({ searchValue, page = 1 }) => {
 		const API_KEY = process.env.NEXT_PUBLIC_API_KEY;
 		const response = await fetch(`${ process.env.NEXT_PUBLIC_BASE_URL }/?apikey=${ API_KEY }&s=${ searchValue }&page=${ page }`);
 		return await response.json();

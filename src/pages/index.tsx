@@ -46,24 +46,26 @@ const Home: FC<IHomeProps> = ({ query }) => {
 	const [savedIDs, setSavedIDs] = useState<string[]>([]);
 
 	useEffect(() => {
-		setSavedIDs(getSavedMovieIDs());
-		const searchParam = query?.search?.toString().toLowerCase();
-		const pageParam = query?.page?.toString().toLowerCase();
+		const isMoviesFetched = Boolean(movies.length);
 
-		if(searchParam && !pageParam) {
-			dispatch(setSearchValue(searchParam));
-			dispatch(fetchMovies({
-				searchValue: searchParam,
-				page: currentPage
-			}));
-		} else
-			if(pageParam) {
-			dispatch(setSearchValue(searchParam ? searchParam : searchValue));
-			dispatch(fetchMovies({
-				searchValue: searchParam ? searchParam : searchValue,
-				page: pageParam ? Number(pageParam) : currentPage
-			}));
-			dispatch(setCurrentPage(Number(pageParam)));
+		if(!isMoviesFetched) {
+			setSavedIDs(getSavedMovieIDs());
+			const searchParam = query?.search?.toString().toLowerCase();
+			const pageParam = query?.page?.toString().toLowerCase();
+
+			if(searchParam && !pageParam) {
+				dispatch(setSearchValue(searchParam));
+				dispatch(fetchMovies({
+					searchValue: searchParam
+				}));
+			} else if(pageParam) {
+				dispatch(setSearchValue(searchParam ? searchParam : searchValue));
+				dispatch(fetchMovies({
+					searchValue: searchParam ? searchParam : searchValue,
+					page: Number(pageParam)
+				}));
+				dispatch(setCurrentPage(Number(pageParam)));
+			}
 		}
 	}, []);
 

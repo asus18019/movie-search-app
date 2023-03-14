@@ -3,7 +3,7 @@
 
 >Just write the name of the movie you want to search or save\
 The Website is available at the link: https://movie-search-app-nine-rho.vercel.app \
-The source code is abailable at the link: https://github.com/asus18019/movie-search-app
+The source code is available at the link: https://github.com/asus18019/movie-search-app
 
 # Technologies:
 
