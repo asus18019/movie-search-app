@@ -47,9 +47,9 @@ const Home: FC<IHomeProps> = ({ query }) => {
 
 	useEffect(() => {
 		const isMoviesFetched = Boolean(movies.length);
+		setSavedIDs(getSavedMovieIDs());
 
 		if(!isMoviesFetched) {
-			setSavedIDs(getSavedMovieIDs());
 			const searchParam = query?.search?.toString().toLowerCase();
 			const pageParam = query?.page?.toString().toLowerCase();
 
